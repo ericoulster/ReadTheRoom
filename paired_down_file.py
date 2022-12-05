@@ -22,7 +22,7 @@ while True:
 
     # Flip the image horizontally for a later selfie-view display
     # Also convert the color space from BGR to RGB
-    image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     # To improve performance
     image.flags.writeable = False
