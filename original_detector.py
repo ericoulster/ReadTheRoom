@@ -2,22 +2,20 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import time
-from mss import mss
 
 mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_faces=10)
+face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 mp_drawing = mp.solutions.drawing_utils
 
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
-bounding_box = {'top': 0, 'left': 0, 'width': 1200, 'height': 1200}
 
-sct = mss()
+cap = cv2.VideoCapture(0)
 
-while True:
+while cap.isOpened():
+    success, image = cap.read()
 
-    image = np.array(sct.grab(bounding_box))
     start = time.time()
 
     # Flip the image horizontally for a later selfie-view display
@@ -100,12 +98,12 @@ while True:
                 text = "Forward"
 
             # Display the nose direction
-            # nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
+            nose_3d_projection, jacobian = cv2.projectPoints(nose_3d, rot_vec, trans_vec, cam_matrix, dist_matrix)
 
-            # p1 = (int(nose_2d[0]), int(nose_2d[1]))
-            # p2 = (int(nose_2d[0] + y * 10) , int(nose_2d[1] - x * 10))
+            p1 = (int(nose_2d[0]), int(nose_2d[1]))
+            p2 = (int(nose_2d[0] + y * 10) , int(nose_2d[1] - x * 10))
             
-            # cv2.line(image, p1, p2, (255, 0, 0), 3)
+            cv2.line(image, p1, p2, (255, 0, 0), 3)
 
             # Add the text on the image
             cv2.putText(image, text, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2)
@@ -135,5 +133,5 @@ while True:
     if cv2.waitKey(5) & 0xFF == 27:
         break
 
-cv2.destroyAllWindows()
+
 cap.release()
