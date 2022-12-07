@@ -69,9 +69,6 @@ while True:
             detection_list.append(detection)
     #You have to get a count of total number of face objects
     # You have to calculate a total 
-    
-    #total_faces = len(detection_list)
-    #person_id = 0
 
     people_list = []
 
@@ -107,11 +104,11 @@ while True:
 
     paying_attention = sum(people_list)
     
-    total = len(people_list)
+    total_faces= len(people_list)
 
     cv2.imshow('Face Detection', image)
 
-    
+    print("paying attention: " + str(paying_attention) + "\n Total: " + str(total_faces))
     if cv2.waitKey(5) & 0xFF == 27:
         break
 
