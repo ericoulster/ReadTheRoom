@@ -5,7 +5,7 @@ import time
 from mss import mss
 
 import streamlit as st
-
+from screeninfo import get_monitors
 
 mp_face_detection = mp.solutions.face_detection
 
@@ -14,7 +14,12 @@ face_detection = mp_face_detection.FaceDetection(
 
 mp_drawing = mp.solutions.drawing_utils
 
-bounding_box = {'top': 0, 'left': 0, 'width': 1200, 'height': 1200}
+# Gets the dimensions of monitors. You can set which monitor to use here.
+monitors = [m for m in get_monitors()]
+
+first_monitor = monitors[0]
+
+bounding_box = {'top': 0, 'left': 0, 'width': first_monitor.width, 'height': first_monitor.height}
 
 sct = mss()
 
@@ -115,8 +120,12 @@ while True:
 
     attention_status = "paying attention: " + str(paying_attention) + "\n Total: " + str(total_faces)
 
+    attention_status_list = [paying_attention, total_faces]
+
     with output.container():
         st.write(attention_status)
+        if total_faces > 0:
+            
 
     #print("paying attention: " + str(paying_attention) + "\n Total: " + str(total_faces))
     if cv2.waitKey(5) & 0xFF == 27:
