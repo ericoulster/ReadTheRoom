@@ -3,7 +3,8 @@ import mediapipe as mp
 import numpy as np
 import time
 from mss import mss
-from scipy.spatial.distance import cdist
+
+import streamlit as st
 
 
 mp_face_detection = mp.solutions.face_detection
@@ -16,6 +17,10 @@ mp_drawing = mp.solutions.drawing_utils
 bounding_box = {'top': 0, 'left': 0, 'width': 1200, 'height': 1200}
 
 sct = mss()
+
+st.title("ReadTheRoom")
+
+output = st.empty()
 
 # points include: 
     # LEFT_EAR_TRAGION
@@ -106,9 +111,14 @@ while True:
     
     total_faces= len(people_list)
 
-    cv2.imshow('Face Detection', image)
+    #cv2.imshow('Face Detection', image)
 
-    print("paying attention: " + str(paying_attention) + "\n Total: " + str(total_faces))
+    attention_status = "paying attention: " + str(paying_attention) + "\n Total: " + str(total_faces)
+
+    with output.container():
+        st.write(attention_status)
+
+    #print("paying attention: " + str(paying_attention) + "\n Total: " + str(total_faces))
     if cv2.waitKey(5) & 0xFF == 27:
         break
 
