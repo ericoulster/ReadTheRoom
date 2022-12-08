@@ -7,6 +7,12 @@ from mss import mss
 import streamlit as st
 from screeninfo import get_monitors
 
+from mesh_direct import mesh_direct
+
+mp_face_mesh = mp.solutions.face_mesh
+face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_faces=1)
+
+
 mp_face_detection = mp.solutions.face_detection
 
 face_detection = mp_face_detection.FaceDetection(
@@ -46,16 +52,15 @@ def calc_distance(p1, p2):
     return np.sqrt(((x2 - x1)**2) + ((y2 - y1)**2))
 
 
-def calc_attention(eye, left, right):
-    side_gaps = min(left, right)
+def calc_attention(left_eye_nose, right_eye_nose, left_ear_nose, right_ear_nose):
+    eye_gaps = min(left_eye_nose, right_eye_nose)
+    ear_gaps = min(left_ear_nose, right_ear_nose)
     # if the ear-eye value is smaller than this fraction, you can assume someone is looking to the side.
     # This value was dialed in manually.
-    eye_gap_threshold = eye / 2
-
-    if side_gaps > eye_gap_threshold:
-        return True
+    if eye_gaps > ear_gaps:
+        return 1
     else:
-        return False
+        return 0
 
 while True:
 
@@ -84,48 +89,26 @@ while True:
 
     if len(detection_list) > 0:
         for i in detection_list:
-            l_ear = mp_face_detection.get_key_point(
-            i, mp_face_detection.FaceKeyPoint.LEFT_EAR_TRAGION)
-
-            l_eye= mp_face_detection.get_key_point(
-            i, mp_face_detection.FaceKeyPoint.LEFT_EYE)
-
-            r_eye= mp_face_detection.get_key_point(
-            i, mp_face_detection.FaceKeyPoint.RIGHT_EYE)
-    
-            r_ear= mp_face_detection.get_key_point(
-            i, mp_face_detection.FaceKeyPoint.RIGHT_EAR_TRAGION)
             
-            eye_gap = calc_distance(l_eye, r_eye)
-            left_gap = calc_distance(l_ear, l_eye)
-            right_gap = calc_distance(r_ear, r_eye)
-            # You can use the X & Y  of the bounding box below to detect the bounding box of each person 
-            # This can single indivduals out for not paying attention
-            # relative_location = i.location_data.relative_bounding_box
+            box = i.location_data.relative_bounding_box
 
-            is_attentive = calc_attention(eye_gap, left_gap, right_gap)
-            # If you want an index for singling out people, use a dict
-            # people_list.append({'person_id': person_id, 'is_attentive': is_attentive})
-
-            #Otherwise, use a list:
-            people_list.append(is_attentive)
-            # Increment value for next person in loop
-            # person_id += 1
-
+            mini_box = {'top': round(box.ymin * (first_monitor.height * 0.9)), 'left' : round(box.xmin * (first_monitor.width * 0.9)), 
+            'width': round(box.width * (first_monitor.width * 1.1)), 'height': round(box.height * (first_monitor.height * 1.1))}
+            attention = mesh_direct(face_mesh, sct, mini_box)
+            
     paying_attention = sum(people_list)
     
     total_faces= len(people_list)
 
-    #cv2.imshow('Face Detection', image)
+    # cv2.imshow('Face Detection', image)
 
     attention_status = "paying attention: " + str(paying_attention) + "\n Total: " + str(total_faces)
 
-    attention_status_list = [paying_attention, total_faces]
 
+    # attention_status_list = [float(paying_attention), float(total_faces)]
+    
     with output.container():
         st.write(attention_status)
-        if total_faces > 0:
-            
 
     #print("paying attention: " + str(paying_attention) + "\n Total: " + str(total_faces))
     if cv2.waitKey(5) & 0xFF == 27:
