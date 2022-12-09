@@ -82,7 +82,7 @@ def mesh_direct(face_mesh, sct, bounding_box):
           
 
             # See where the user's head tilting
-            if (y < -10) or (y > 10) or (x < -10) or (x > 10):
+            if (y < -15) or (y > 15) or (x < -15) or (x > 15):
                 return 0
             else:
                 return 1

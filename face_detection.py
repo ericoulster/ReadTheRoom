@@ -92,13 +92,20 @@ while True:
             
             box = i.location_data.relative_bounding_box
 
-            mini_box = {'top': round(box.ymin * (first_monitor.height * 0.9)), 'left' : round(box.xmin * (first_monitor.width * 0.9)), 
-            'width': round(box.width * (first_monitor.width * 1.1)), 'height': round(box.height * (first_monitor.height * 1.1))}
+            mini_box = {'top': round(box.ymin * (first_monitor.height * 0.8)), 'left' : round(box.xmin * (first_monitor.width * 0.8)), 
+            'width': round(box.width * (first_monitor.width * 1.2)), 'height': round(box.height * (first_monitor.height * 1.2))}
+
             attention = mesh_direct(face_mesh, sct, mini_box)
-            
-    paying_attention = sum(people_list)
+            if attention is not None:
+                people_list.append(attention)
+
     
-    total_faces= len(people_list)
+    if len(people_list) > 0:
+        paying_attention = sum(people_list)
+        total_faces= len(people_list)
+    else:
+        paying_attention = 0
+        total_faces = 0
 
     # cv2.imshow('Face Detection', image)
 
