@@ -10,13 +10,13 @@ from screeninfo import get_monitors
 from mesh_direct import mesh_direct
 
 mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5, max_num_faces=1)
+face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.3, min_tracking_confidence=0.3, max_num_faces=1)
 
 
 mp_face_detection = mp.solutions.face_detection
 
 face_detection = mp_face_detection.FaceDetection(
-    model_selection=1, min_detection_confidence=0.3)
+    model_selection=1, min_detection_confidence=0.1)
 
 mp_drawing = mp.solutions.drawing_utils
 
@@ -92,8 +92,8 @@ while True:
             
             box = i.location_data.relative_bounding_box
 
-            mini_box = {'top': round(box.ymin * (first_monitor.height * 0.8)), 'left' : round(box.xmin * (first_monitor.width * 0.8)), 
-            'width': round(box.width * (first_monitor.width * 1.2)), 'height': round(box.height * (first_monitor.height * 1.2))}
+            mini_box = {'top': round(box.ymin * (first_monitor.height * 0.90)), 'left' : round(box.xmin * (first_monitor.width * 0.90)), 
+            'width': round(box.width * (first_monitor.width * 1.10)), 'height': round(box.height * (first_monitor.height * 1.10))}
 
             attention = mesh_direct(face_mesh, sct, mini_box)
             if attention is not None:
