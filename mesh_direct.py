@@ -13,8 +13,6 @@ def mesh_direct(face_mesh, sct, bounding_box):
 
     bounding_box = bounding_box
 
-
-
     subimage = np.array(sct.grab(bounding_box))
 
     # Flip the subimage horizontally for a later selfie-view display
